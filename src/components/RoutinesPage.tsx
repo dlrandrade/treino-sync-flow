@@ -2,6 +2,7 @@
 import React from 'react';
 import { Plus, Calendar, Clock, Dumbbell } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { toast } from '@/components/ui/sonner';
 
 interface RoutinesPageProps {
   onStartWorkout: () => void;
@@ -34,7 +35,19 @@ const RoutinesPage: React.FC<RoutinesPageProps> = ({ onStartWorkout }) => {
 
   const handleCreateNewRoutine = () => {
     console.log('Criando nova rotina');
-    // Aqui implementaremos a funcionalidade de criar rotina
+    toast('Funcionalidade de criar rotina em desenvolvimento!');
+  };
+
+  const handleStartWorkoutWithRoutine = (routineId: number, routineName: string) => {
+    console.log('Iniciando treino com rotina:', routineId, routineName);
+    toast(`Iniciando treino: ${routineName}`);
+    onStartWorkout();
+  };
+
+  const handleQuickStart = () => {
+    console.log('Iniciando treino rápido');
+    toast('Iniciando treino livre!');
+    onStartWorkout();
   };
 
   return (
@@ -47,9 +60,33 @@ const RoutinesPage: React.FC<RoutinesPageProps> = ({ onStartWorkout }) => {
         </Button>
       </div>
 
+      {/* Quick Start Card */}
+      <div className="bg-card p-6 rounded-lg border border-border">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 workout-gradient rounded-lg flex items-center justify-center">
+              <Dumbbell className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold">Começar Agora</h3>
+              <p className="text-muted-foreground">
+                Inicie um treino livre sem rotina específica
+              </p>
+            </div>
+          </div>
+          <Button 
+            onClick={handleQuickStart}
+            className="workout-gradient text-white hover:opacity-90"
+            size="lg"
+          >
+            Começar Treino Livre
+          </Button>
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {routines.map((routine) => (
-          <div key={routine.id} className="bg-card p-6 rounded-lg border border-border">
+          <div key={routine.id} className="bg-card p-6 rounded-lg border border-border hover:border-primary/50 transition-colors">
             <div className="flex items-start justify-between mb-4">
               <div className="w-10 h-10 stats-gradient rounded-lg flex items-center justify-center">
                 <Dumbbell className="w-5 h-5 text-white" />
@@ -89,9 +126,8 @@ const RoutinesPage: React.FC<RoutinesPageProps> = ({ onStartWorkout }) => {
             </div>
 
             <Button 
-              onClick={onStartWorkout}
-              className="w-full"
-              variant="outline"
+              onClick={() => handleStartWorkoutWithRoutine(routine.id, routine.name)}
+              className="w-full workout-gradient text-white hover:opacity-90"
             >
               Iniciar Treino
             </Button>
@@ -99,7 +135,10 @@ const RoutinesPage: React.FC<RoutinesPageProps> = ({ onStartWorkout }) => {
         ))}
 
         {/* Card para criar nova rotina */}
-        <div className="bg-card p-6 rounded-lg border border-dashed border-border hover:border-primary/50 transition-colors">
+        <div 
+          className="bg-card p-6 rounded-lg border border-dashed border-border hover:border-primary/50 transition-colors cursor-pointer"
+          onClick={handleCreateNewRoutine}
+        >
           <div className="flex flex-col items-center justify-center h-full text-center space-y-4">
             <div className="w-12 h-12 bg-accent rounded-lg flex items-center justify-center">
               <Plus className="w-6 h-6 text-muted-foreground" />
@@ -110,7 +149,7 @@ const RoutinesPage: React.FC<RoutinesPageProps> = ({ onStartWorkout }) => {
                 Monte uma rotina personalizada com seus exercícios favoritos
               </p>
             </div>
-            <Button onClick={handleCreateNewRoutine} variant="ghost" className="text-primary">
+            <Button variant="ghost" className="text-primary">
               Começar
             </Button>
           </div>

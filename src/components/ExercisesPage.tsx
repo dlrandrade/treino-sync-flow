@@ -3,10 +3,13 @@ import React, { useState } from 'react';
 import { Search, Filter, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import ExerciseDetailModal from './ExerciseDetailModal';
 
 const ExercisesPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('todos');
+  const [selectedExercise, setSelectedExercise] = useState(null);
+  const [showModal, setShowModal] = useState(false);
 
   const categories = [
     { id: 'todos', name: 'Todos' },
@@ -34,6 +37,17 @@ const ExercisesPage = () => {
     const matchesCategory = selectedCategory === 'todos' || exercise.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
+
+  const handleViewDetails = (exercise: any) => {
+    console.log('Abrindo detalhes do exercício:', exercise.name);
+    setSelectedExercise(exercise);
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setSelectedExercise(null);
+  };
 
   return (
     <div className="max-w-6xl mx-auto space-y-6">
@@ -109,7 +123,11 @@ const ExercisesPage = () => {
               </div>
             </div>
 
-            <Button variant="outline" className="w-full mt-4">
+            <Button 
+              variant="outline" 
+              className="w-full mt-4"
+              onClick={() => handleViewDetails(exercise)}
+            >
               Ver Detalhes
             </Button>
           </div>
@@ -121,6 +139,13 @@ const ExercisesPage = () => {
           <p className="text-muted-foreground">Nenhum exercício encontrado</p>
         </div>
       )}
+
+      {/* Modal de Detalhes */}
+      <ExerciseDetailModal
+        exercise={selectedExercise}
+        isOpen={showModal}
+        onClose={handleCloseModal}
+      />
     </div>
   );
 };
