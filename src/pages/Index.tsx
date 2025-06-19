@@ -8,6 +8,7 @@ import WorkoutsPage from '@/components/WorkoutsPage';
 import RoutinesPage from '@/components/RoutinesPage';
 import ExercisesPage from '@/components/ExercisesPage';
 import ProfilePage from '@/components/ProfilePage';
+import { toast } from '@/components/ui/sonner';
 
 const Index = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -23,6 +24,7 @@ const Index = () => {
         name: 'Usuário Demo'
       });
       setIsLoggedIn(true);
+      toast('Login realizado com sucesso!');
     } else {
       // Para demonstração, aceita qualquer e-mail/senha válidos
       if (email.includes('@') && password.length >= 3) {
@@ -31,8 +33,9 @@ const Index = () => {
           name: email.split('@')[0]
         });
         setIsLoggedIn(true);
+        toast('Login realizado com sucesso!');
       } else {
-        alert('Credenciais inválidas. Use demo@zym.com / demo123 ou qualquer e-mail válido.');
+        toast('Credenciais inválidas. Use demo@zym.com / demo123 ou qualquer e-mail válido.');
       }
     }
   };
@@ -42,23 +45,28 @@ const Index = () => {
     setCurrentUser(null);
     setCurrentPage('dashboard');
     setShowWorkoutStart(false);
+    toast('Logout realizado com sucesso!');
   };
 
   const handleStartWorkout = () => {
+    console.log('Iniciando interface de treino');
     setShowWorkoutStart(true);
   };
 
   const handleBackToDashboard = () => {
+    console.log('Voltando ao dashboard');
     setShowWorkoutStart(false);
   };
 
   const handleStartEmpty = () => {
     console.log('Iniciando treino livre');
-    // Aqui implementaremos a interface de treino
+    toast('Treino livre iniciado! (Em desenvolvimento)');
+    // Aqui implementaremos a interface de treino livre
   };
 
   const handleStartWithRoutine = (routineId: string) => {
     console.log('Iniciando treino com rotina:', routineId);
+    toast(`Treino iniciado com rotina ${routineId}! (Em desenvolvimento)`);
     // Aqui implementaremos a interface de treino com rotina
   };
 
@@ -97,7 +105,11 @@ const Index = () => {
   return (
     <AppLayout 
       currentPage={currentPage} 
-      onPageChange={setCurrentPage}
+      onPageChange={(page) => {
+        console.log('Navegando para:', page);
+        setCurrentPage(page);
+        setShowWorkoutStart(false); // Volta ao conteúdo principal quando navega
+      }}
       onLogout={handleLogout}
     >
       {renderCurrentPage()}

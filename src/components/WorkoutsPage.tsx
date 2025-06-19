@@ -1,7 +1,8 @@
 
 import React from 'react';
-import { Calendar, Clock, Weight, TrendingUp } from 'lucide-react';
+import { Calendar, Clock, Weight, TrendingUp, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { toast } from '@/components/ui/sonner';
 
 const WorkoutsPage = () => {
   const workouts = [
@@ -31,11 +32,22 @@ const WorkoutsPage = () => {
     }
   ];
 
+  const handleFilter = () => {
+    console.log('Abrindo filtros');
+    toast('Filtros abertos! (Em desenvolvimento)');
+  };
+
+  const handleViewDetails = (workoutId: number) => {
+    console.log('Visualizando detalhes do treino:', workoutId);
+    toast(`Detalhes do treino ${workoutId}! (Em desenvolvimento)`);
+  };
+
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">Histórico de Treinos</h1>
-        <Button className="workout-gradient text-white">
+        <Button onClick={handleFilter} className="workout-gradient text-white">
+          <Filter className="w-4 h-4 mr-2" />
           Filtrar
         </Button>
       </div>
@@ -79,7 +91,11 @@ const WorkoutsPage = () => {
                   <p className="text-sm text-muted-foreground">{workout.exercises.join(', ')}</p>
                 </div>
               </div>
-              <Button variant="ghost" size="sm">
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={() => handleViewDetails(workout.id)}
+              >
                 Ver Detalhes
               </Button>
             </div>

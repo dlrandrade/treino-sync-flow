@@ -32,11 +32,16 @@ const RoutinesPage: React.FC<RoutinesPageProps> = ({ onStartWorkout }) => {
     }
   ];
 
+  const handleCreateNewRoutine = () => {
+    console.log('Criando nova rotina');
+    // Aqui implementaremos a funcionalidade de criar rotina
+  };
+
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">Suas Rotinas</h1>
-        <Button className="workout-gradient text-white">
+        <Button onClick={handleCreateNewRoutine} className="workout-gradient text-white">
           <Plus className="w-4 h-4 mr-2" />
           Nova Rotina
         </Button>
@@ -105,7 +110,7 @@ const RoutinesPage: React.FC<RoutinesPageProps> = ({ onStartWorkout }) => {
                 Monte uma rotina personalizada com seus exercícios favoritos
               </p>
             </div>
-            <Button variant="ghost" className="text-primary">
+            <Button onClick={handleCreateNewRoutine} variant="ghost" className="text-primary">
               Começar
             </Button>
           </div>
