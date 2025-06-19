@@ -1,12 +1,48 @@
 
 import React, { useState } from 'react';
 import AppLayout from '@/components/AppLayout';
+import LoginScreen from '@/components/LoginScreen';
 import Dashboard from '@/components/Dashboard';
 import WorkoutStart from '@/components/WorkoutStart';
+import WorkoutsPage from '@/components/WorkoutsPage';
+import RoutinesPage from '@/components/RoutinesPage';
+import ExercisesPage from '@/components/ExercisesPage';
+import ProfilePage from '@/components/ProfilePage';
 
 const Index = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [currentUser, setCurrentUser] = useState<{ email: string; name: string } | null>(null);
   const [currentPage, setCurrentPage] = useState('dashboard');
   const [showWorkoutStart, setShowWorkoutStart] = useState(false);
+
+  const handleLogin = (email: string, password: string) => {
+    // Simulação de login - em produção, isso seria uma chamada para API
+    if (email === 'demo@zym.com' && password === 'demo123') {
+      setCurrentUser({
+        email: email,
+        name: 'Usuário Demo'
+      });
+      setIsLoggedIn(true);
+    } else {
+      // Para demonstração, aceita qualquer e-mail/senha válidos
+      if (email.includes('@') && password.length >= 3) {
+        setCurrentUser({
+          email: email,
+          name: email.split('@')[0]
+        });
+        setIsLoggedIn(true);
+      } else {
+        alert('Credenciais inválidas. Use demo@zym.com / demo123 ou qualquer e-mail válido.');
+      }
+    }
+  };
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    setCurrentUser(null);
+    setCurrentPage('dashboard');
+    setShowWorkoutStart(false);
+  };
 
   const handleStartWorkout = () => {
     setShowWorkoutStart(true);
@@ -17,14 +53,19 @@ const Index = () => {
   };
 
   const handleStartEmpty = () => {
-    // Aqui implementaremos a interface de treino
     console.log('Iniciando treino livre');
+    // Aqui implementaremos a interface de treino
   };
 
   const handleStartWithRoutine = (routineId: string) => {
-    // Aqui implementaremos a interface de treino com rotina
     console.log('Iniciando treino com rotina:', routineId);
+    // Aqui implementaremos a interface de treino com rotina
   };
+
+  // Se não estiver logado, mostra a tela de login
+  if (!isLoggedIn) {
+    return <LoginScreen onLogin={handleLogin} />;
+  }
 
   const renderCurrentPage = () => {
     if (showWorkoutStart) {
@@ -41,40 +82,24 @@ const Index = () => {
       case 'dashboard':
         return <Dashboard onStartWorkout={handleStartWorkout} />;
       case 'workouts':
-        return (
-          <div className="text-center py-20">
-            <h2 className="text-2xl font-bold mb-4">Histórico de Treinos</h2>
-            <p className="text-muted-foreground">Em breve: visualize todos os seus treinos</p>
-          </div>
-        );
+        return <WorkoutsPage />;
       case 'routines':
-        return (
-          <div className="text-center py-20">
-            <h2 className="text-2xl font-bold mb-4">Suas Rotinas</h2>
-            <p className="text-muted-foreground">Em breve: crie e gerencie suas rotinas</p>
-          </div>
-        );
+        return <RoutinesPage onStartWorkout={handleStartWorkout} />;
       case 'exercises':
-        return (
-          <div className="text-center py-20">
-            <h2 className="text-2xl font-bold mb-4">Biblioteca de Exercícios</h2>
-            <p className="text-muted-foreground">Em breve: explore exercícios e crie personalizados</p>
-          </div>
-        );
+        return <ExercisesPage />;
       case 'profile':
-        return (
-          <div className="text-center py-20">
-            <h2 className="text-2xl font-bold mb-4">Seu Perfil</h2>
-            <p className="text-muted-foreground">Em breve: gerencie suas informações pessoais</p>
-          </div>
-        );
+        return <ProfilePage user={currentUser} />;
       default:
         return <Dashboard onStartWorkout={handleStartWorkout} />;
     }
   };
 
   return (
-    <AppLayout currentPage={currentPage} onPageChange={setCurrentPage}>
+    <AppLayout 
+      currentPage={currentPage} 
+      onPageChange={setCurrentPage}
+      onLogout={handleLogout}
+    >
       {renderCurrentPage()}
     </AppLayout>
   );

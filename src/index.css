@@ -26,6 +26,28 @@
     --ring: 142.4 71.8% 29.2%;
     --radius: 0.75rem;
   }
+
+  .light {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 142.1 76.2% 36.3%;
+    --primary-foreground: 355.7 100% 97.3%;
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 142.4 71.8% 29.2%;
+  }
 }
 
 @layer base {
@@ -57,6 +79,13 @@
   .sidebar-item.active {
     @apply bg-primary text-primary-foreground;
   }
+
+  /* Mobile optimizations */
+  @media (max-width: 768px) {
+    .sidebar-item {
+      @apply py-4 text-base;
+    }
+  }
 }
 
 /* Animations */
@@ -86,4 +115,50 @@
 
 .animate-fade-in {
   animation: fadeIn 0.3s ease-out;
+}
+
+/* Mobile-specific styles */
+@media (max-width: 640px) {
+  .text-3xl {
+    @apply text-2xl;
+  }
+  
+  .text-2xl {
+    @apply text-xl;
+  }
+  
+  .grid-cols-3 {
+    @apply grid-cols-1;
+  }
+  
+  .gap-6 {
+    @apply gap-4;
+  }
+  
+  .p-6 {
+    @apply p-4;
+  }
+}
+
+/* Smooth theme transitions */
+* {
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+/* Ensure proper touch targets on mobile */
+@media (max-width: 768px) {
+  button, .sidebar-item {
+    min-height: 44px;
+  }
+}
+
+/* Safe area adjustments for mobile devices */
+@supports (padding: env(safe-area-inset-top)) {
+  .mobile-safe-top {
+    padding-top: env(safe-area-inset-top);
+  }
+  
+  .mobile-safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
 }
