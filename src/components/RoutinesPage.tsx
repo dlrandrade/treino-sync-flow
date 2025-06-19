@@ -1,15 +1,18 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Plus, Calendar, Clock, Dumbbell } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/sonner';
+import CreateRoutineModal from './CreateRoutineModal';
 
 interface RoutinesPageProps {
   onStartWorkout: () => void;
+  onStartWorkoutWithRoutine: (routineId: number, routineName: string) => void;
 }
 
-const RoutinesPage: React.FC<RoutinesPageProps> = ({ onStartWorkout }) => {
-  const routines = [
+const RoutinesPage: React.FC<RoutinesPageProps> = ({ onStartWorkout, onStartWorkoutWithRoutine }) => {
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [routines, setRoutines] = useState([
     {
       id: 1,
       name: 'Push - Peito, Ombro, Tríceps',
@@ -31,17 +34,22 @@ const RoutinesPage: React.FC<RoutinesPageProps> = ({ onStartWorkout }) => {
       estimatedTime: 70,
       lastUsed: '2025-06-13'
     }
-  ];
+  ]);
 
   const handleCreateNewRoutine = () => {
-    console.log('Criando nova rotina');
-    toast('Funcionalidade de criar rotina em desenvolvimento!');
+    console.log('Abrindo modal para criar nova rotina');
+    setShowCreateModal(true);
+  };
+
+  const handleCreateRoutine = (newRoutine: any) => {
+    setRoutines(prev => [...prev, newRoutine]);
+    console.log('Nova rotina criada:', newRoutine);
   };
 
   const handleStartWorkoutWithRoutine = (routineId: number, routineName: string) => {
     console.log('Iniciando treino com rotina:', routineId, routineName);
     toast(`Iniciando treino: ${routineName}`);
-    onStartWorkout();
+    onStartWorkoutWithRoutine(routineId, routineName);
   };
 
   const handleQuickStart = () => {
@@ -155,6 +163,13 @@ const RoutinesPage: React.FC<RoutinesPageProps> = ({ onStartWorkout }) => {
           </div>
         </div>
       </div>
+
+      {/* Modal de Criação */}
+      <CreateRoutineModal
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        onCreateRoutine={handleCreateRoutine}
+      />
     </div>
   );
 };

@@ -3,7 +3,7 @@ import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { X, Clock, Target, User, Dumbbell } from 'lucide-react';
+import { X, Clock, Target, User, Dumbbell, Play, Image } from 'lucide-react';
 
 interface Exercise {
   id: number;
@@ -11,6 +11,8 @@ interface Exercise {
   category: string;
   equipment: string;
   difficulty: string;
+  mediaType?: 'image' | 'video';
+  mediaUrl?: string;
 }
 
 interface ExerciseDetailModalProps {
@@ -34,7 +36,7 @@ const ExerciseDetailModal: React.FC<ExerciseDetailModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold flex items-center gap-3">
             <div className="w-10 h-10 workout-gradient rounded-lg flex items-center justify-center">
@@ -45,6 +47,30 @@ const ExerciseDetailModal: React.FC<ExerciseDetailModalProps> = ({
         </DialogHeader>
 
         <div className="space-y-6">
+          {/* Media Section */}
+          {exercise.mediaUrl && (
+            <div className="relative w-full h-64 bg-gray-100 rounded-lg overflow-hidden">
+              <img 
+                src={exercise.mediaUrl} 
+                alt={exercise.name}
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute top-4 right-4">
+                {exercise.mediaType === 'video' ? (
+                  <div className="bg-black/60 text-white p-2 rounded-full flex items-center gap-2">
+                    <Play className="w-5 h-5" />
+                    <span className="text-sm">Vídeo demonstrativo</span>
+                  </div>
+                ) : (
+                  <div className="bg-black/60 text-white p-2 rounded-full flex items-center gap-2">
+                    <Image className="w-5 h-5" />
+                    <span className="text-sm">Imagem demonstrativa</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
           {/* Informações básicas */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="p-4 bg-card rounded-lg border">
@@ -103,6 +129,19 @@ const ExerciseDetailModal: React.FC<ExerciseDetailModalProps> = ({
                 <li>Descanse adequadamente entre as séries</li>
               </ul>
             </div>
+
+            {exercise.mediaType === 'video' && (
+              <div>
+                <h3 className="text-lg font-semibold mb-2">Demonstração em Vídeo</h3>
+                <p className="text-sm text-muted-foreground mb-3">
+                  Assista ao vídeo demonstrativo para aprender a técnica correta de execução.
+                </p>
+                <Button variant="outline" className="flex items-center gap-2">
+                  <Play className="w-4 h-4" />
+                  Reproduzir Vídeo
+                </Button>
+              </div>
+            )}
           </div>
 
           {/* Botões de ação */}

@@ -4,6 +4,7 @@ import AppLayout from '@/components/AppLayout';
 import LoginScreen from '@/components/LoginScreen';
 import Dashboard from '@/components/Dashboard';
 import WorkoutStart from '@/components/WorkoutStart';
+import ActiveWorkout from '@/components/ActiveWorkout';
 import WorkoutsPage from '@/components/WorkoutsPage';
 import RoutinesPage from '@/components/RoutinesPage';
 import ExercisesPage from '@/components/ExercisesPage';
@@ -15,6 +16,7 @@ const Index = () => {
   const [currentUser, setCurrentUser] = useState<{ email: string; name: string } | null>(null);
   const [currentPage, setCurrentPage] = useState('dashboard');
   const [showWorkoutStart, setShowWorkoutStart] = useState(false);
+  const [activeWorkout, setActiveWorkout] = useState<{ routineId?: number; routineName?: string } | null>(null);
 
   const handleLogin = (email: string, password: string) => {
     // Simulação de login - em produção, isso seria uma chamada para API
@@ -45,12 +47,20 @@ const Index = () => {
     setCurrentUser(null);
     setCurrentPage('dashboard');
     setShowWorkoutStart(false);
+    setActiveWorkout(null);
     toast('Logout realizado com sucesso!');
   };
 
   const handleStartWorkout = () => {
     console.log('Iniciando interface de treino');
     setShowWorkoutStart(true);
+  };
+
+  const handleStartWorkoutWithRoutine = (routineId: number, routineName: string) => {
+    console.log('Iniciando treino com rotina:', routineId, routineName);
+    setActiveWorkout({ routineId, routineName });
+    setShowWorkoutStart(false);
+    toast(`Treino iniciado: ${routineName}`);
   };
 
   const handleBackToDashboard = () => {
@@ -60,14 +70,35 @@ const Index = () => {
 
   const handleStartEmpty = () => {
     console.log('Iniciando treino livre');
-    toast('Treino livre iniciado! (Em desenvolvimento)');
-    // Aqui implementaremos a interface de treino livre
+    setActiveWorkout({});
+    setShowWorkoutStart(false);
+    toast('Treino livre iniciado!');
   };
 
   const handleStartWithRoutine = (routineId: string) => {
     console.log('Iniciando treino com rotina:', routineId);
-    toast(`Treino iniciado com rotina ${routineId}! (Em desenvolvimento)`);
-    // Aqui implementaremos a interface de treino com rotina
+    const routineNames = {
+      '1': 'Push - Peito, Ombro, Tríceps',
+      '2': 'Pull - Costas, Bíceps',
+      '3': 'Legs - Pernas Completo'
+    };
+    const routineName = routineNames[routineId as keyof typeof routineNames] || 'Rotina Personalizada';
+    
+    setActiveWorkout({ routineId: Number(routineId), routineName });
+    setShowWorkoutStart(false);
+    toast(`Treino iniciado: ${routineName}`);
+  };
+
+  const handleFinishWorkout = () => {
+    console.log('Treino finalizado');
+    setActiveWorkout(null);
+    setCurrentPage('dashboard');
+  };
+
+  const handleCancelWorkout = () => {
+    console.log('Treino cancelado');
+    setActiveWorkout(null);
+    setCurrentPage('dashboard');
   };
 
   // Se não estiver logado, mostra a tela de login
@@ -76,6 +107,19 @@ const Index = () => {
   }
 
   const renderCurrentPage = () => {
+    // Se há um treino ativo, mostra a interface de treino
+    if (activeWorkout) {
+      return (
+        <ActiveWorkout
+          routineId={activeWorkout.routineId}
+          routineName={activeWorkout.routineName}
+          onFinish={handleFinishWorkout}
+          onCancel={handleCancelWorkout}
+        />
+      );
+    }
+
+    // Se está na tela de início de treino
     if (showWorkoutStart) {
       return (
         <WorkoutStart 
@@ -86,13 +130,19 @@ const Index = () => {
       );
     }
 
+    // Páginas normais
     switch (currentPage) {
       case 'dashboard':
         return <Dashboard onStartWorkout={handleStartWorkout} />;
       case 'workouts':
         return <WorkoutsPage />;
       case 'routines':
-        return <RoutinesPage onStartWorkout={handleStartWorkout} />;
+        return (
+          <RoutinesPage 
+            onStartWorkout={handleStartWorkout}
+            onStartWorkoutWithRoutine={handleStartWorkoutWithRoutine}
+          />
+        );
       case 'exercises':
         return <ExercisesPage />;
       case 'profile':
@@ -109,6 +159,7 @@ const Index = () => {
         console.log('Navegando para:', page);
         setCurrentPage(page);
         setShowWorkoutStart(false); // Volta ao conteúdo principal quando navega
+        setActiveWorkout(null); // Cancela treino ativo se navegar
       }}
       onLogout={handleLogout}
     >
