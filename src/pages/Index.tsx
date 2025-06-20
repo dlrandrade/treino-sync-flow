@@ -135,7 +135,7 @@ const Index = () => {
       case 'dashboard':
         return <Dashboard onStartWorkout={handleStartWorkout} />;
       case 'workouts':
-        return <WorkoutsPage />;
+        return <WorkoutsPage onStartWorkout={handleStartWorkout} />;
       case 'routines':
         return (
           <RoutinesPage 

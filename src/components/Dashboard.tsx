@@ -1,169 +1,129 @@
 
-import React from 'react';
-import { Card, CardContent } from '@/components/ui/card';
+import React, { useState, useEffect } from 'react';
+import { Calendar, TrendingUp, Clock, Trophy, Play, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Dumbbell, TrendingUp, Calendar, Trophy, Plus, Clock } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { getRandomQuote } from '@/utils/motivationalQuotes';
 
 interface DashboardProps {
   onStartWorkout: () => void;
 }
 
 const Dashboard: React.FC<DashboardProps> = ({ onStartWorkout }) => {
-  // Mock data - em um app real viria do backend
-  const stats = {
-    totalWorkouts: 45,
-    thisWeek: 4,
-    totalVolume: 12450, // kg
-    bestSet: 100, // kg
-    streak: 7, // dias
-    averageDuration: 65 // minutos
-  };
+  const [motivationalQuote, setMotivationalQuote] = useState('');
 
-  const recentWorkouts = [
-    { date: '2025-06-19', name: 'Peito e Tríceps', duration: 68, volume: 2840 },
-    { date: '2025-06-17', name: 'Costas e Bíceps', duration: 72, volume: 3120 },
-    { date: '2025-06-15', name: 'Pernas', duration: 85, volume: 4250 }
+  useEffect(() => {
+    setMotivationalQuote(getRandomQuote());
+    // Atualiza a frase a cada 30 segundos
+    const interval = setInterval(() => {
+      setMotivationalQuote(getRandomQuote());
+    }, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const stats = [
+    { label: 'Treinos desta semana', value: '3', icon: Calendar },
+    { label: 'Tempo total', value: '4h 30min', icon: Clock },
+    { label: 'Exercícios favoritos', value: '12', icon: Trophy },
+    { label: 'Dias consecutivos', value: '7', icon: TrendingUp }
   ];
 
-  const handleStartWorkout = () => {
-    console.log('Botão Iniciar Treino clicado no Dashboard');
-    onStartWorkout();
-  };
+  const recentWorkouts = [
+    { name: 'Push - Peito, Ombro, Tríceps', date: '2025-06-20', duration: '1h 15min' },
+    { name: 'Pull - Costas, Bíceps', date: '2025-06-18', duration: '1h 05min' },
+    { name: 'Legs - Pernas Completo', date: '2025-06-16', duration: '1h 30min' }
+  ];
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      {/* Header com Ação Principal */}
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold">Bem-vindo de volta!</h1>
-          <p className="text-muted-foreground">Pronto para outro treino incrível?</p>
-        </div>
-        <Button 
-          size="lg" 
-          className="workout-gradient text-white hover:opacity-90 transition-opacity"
-          onClick={handleStartWorkout}
-        >
-          <Plus className="w-5 h-5 mr-2" />
-          Iniciar Treino
-        </Button>
+    <div className="max-w-6xl mx-auto space-y-6">
+      {/* Header com frase motivacional */}
+      <div className="text-center p-6 workout-gradient rounded-xl text-white">
+        <h1 className="text-3xl font-bold mb-2">Bem-vindo ao ZymApp</h1>
+        <p className="text-lg opacity-90">{motivationalQuote}</p>
       </div>
 
-      {/* Cards de Estatísticas */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <Card className="animate-slide-in" style={{ animationDelay: '0.1s' }}>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Treinos desta semana</p>
-                <p className="text-3xl font-bold text-primary">{stats.thisWeek}</p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  {stats.totalWorkouts} total
-                </p>
-              </div>
-              <div className="w-12 h-12 stats-gradient rounded-lg flex items-center justify-center">
-                <Calendar className="w-6 h-6 text-white" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="animate-slide-in" style={{ animationDelay: '0.2s' }}>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Volume Total</p>
-                <p className="text-3xl font-bold text-primary">
-                  {(stats.totalVolume / 1000).toFixed(1)}t
-                </p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Este mês
-                </p>
-              </div>
-              <div className="w-12 h-12 progress-gradient rounded-lg flex items-center justify-center">
-                <TrendingUp className="w-6 h-6 text-white" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="animate-slide-in" style={{ animationDelay: '0.3s' }}>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Sequência</p>
-                <p className="text-3xl font-bold text-primary">{stats.streak}</p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  dias consecutivos
-                </p>
-              </div>
-              <div className="w-12 h-12 workout-gradient rounded-lg flex items-center justify-center">
-                <Trophy className="w-6 h-6 text-white" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Seção de Conquistas e Motivação */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="animate-slide-in" style={{ animationDelay: '0.4s' }}>
-          <CardContent className="p-6">
-            <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-              <Trophy className="w-5 h-5 text-primary" />
-              Seus Recordes
-            </h3>
-            <div className="space-y-3">
-              <div className="flex justify-between items-center">
-                <span className="text-muted-foreground">Maior carga</span>
-                <span className="font-semibold">{stats.bestSet} kg</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-muted-foreground">Duração média</span>
-                <span className="font-semibold">{stats.averageDuration} min</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-muted-foreground">Melhor sequência</span>
-                <span className="font-semibold">14 dias</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="animate-slide-in" style={{ animationDelay: '0.5s' }}>
-          <CardContent className="p-6">
-            <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-              <Clock className="w-5 h-5 text-primary" />
-              Treinos Recentes
-            </h3>
-            <div className="space-y-3">
-              {recentWorkouts.map((workout, index) => (
-                <div key={index} className="flex justify-between items-center">
-                  <div>
-                    <p className="font-medium">{workout.name}</p>
-                    <p className="text-sm text-muted-foreground">
-                      {workout.date} • {workout.duration}min
-                    </p>
+      {/* Estatísticas */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {stats.map((stat, index) => {
+          const Icon = stat.icon;
+          return (
+            <Card key={index} className="border-border">
+              <CardContent className="p-4">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-8 h-8 workout-gradient rounded-lg flex items-center justify-center">
+                    <Icon className="w-4 h-4 text-white" />
                   </div>
-                  <div className="text-right">
-                    <p className="font-semibold">{(workout.volume / 1000).toFixed(1)}t</p>
-                    <p className="text-xs text-muted-foreground">volume</p>
-                  </div>
+                  <span className="text-sm text-muted-foreground">{stat.label}</span>
                 </div>
-              ))}
+                <p className="text-2xl font-bold">{stat.value}</p>
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
+
+      {/* Ações rápidas */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Card className="border-border">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Play className="w-5 h-5" />
+              Começar Treino
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-muted-foreground">Pronto para treinar? Comece agora mesmo!</p>
+            <Button 
+              onClick={onStartWorkout}
+              className="w-full workout-gradient text-white"
+            >
+              <Play className="w-4 h-4 mr-2" />
+              Iniciar Treino
+            </Button>
+          </CardContent>
+        </Card>
+
+        <Card className="border-border">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Plus className="w-5 h-5" />
+              Progresso da Semana
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              <div className="flex justify-between items-center">
+                <span className="text-sm">Meta semanal</span>
+                <Badge variant="secondary">3/4 treinos</Badge>
+              </div>
+              <div className="w-full bg-secondary rounded-full h-2">
+                <div className="bg-primary h-2 rounded-full" style={{ width: '75%' }}></div>
+              </div>
+              <p className="text-sm text-muted-foreground">Falta apenas 1 treino para bater sua meta!</p>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Motivational Quote */}
-      <Card className="animate-slide-in" style={{ animationDelay: '0.6s' }}>
-        <CardContent className="p-6 text-center">
-          <div className="workout-gradient rounded-lg p-6 text-white">
-            <Dumbbell className="w-12 h-12 mx-auto mb-4 opacity-80" />
-            <blockquote className="text-lg font-medium mb-2">
-              "O sucesso não é final, o fracasso não é fatal: é a coragem de continuar que conta."
-            </blockquote>
-            <cite className="text-sm opacity-80">- Winston Churchill</cite>
+      {/* Treinos recentes */}
+      <Card className="border-border">
+        <CardHeader>
+          <CardTitle>Treinos Recentes</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3">
+            {recentWorkouts.map((workout, index) => (
+              <div key={index} className="flex items-center justify-between p-3 bg-accent/20 rounded-lg">
+                <div>
+                  <h4 className="font-medium">{workout.name}</h4>
+                  <p className="text-sm text-muted-foreground">{workout.date}</p>
+                </div>
+                <div className="text-right">
+                  <Badge variant="outline">{workout.duration}</Badge>
+                </div>
+              </div>
+            ))}
           </div>
         </CardContent>
       </Card>

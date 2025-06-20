@@ -5,7 +5,11 @@ import { Badge } from '@/components/ui/badge';
 import WorkoutFilters from './WorkoutFilters';
 import WorkoutDetailModal from './WorkoutDetailModal';
 
-const WorkoutsPage = () => {
+interface WorkoutsPageProps {
+  onStartWorkout?: () => void;
+}
+
+const WorkoutsPage: React.FC<WorkoutsPageProps> = ({ onStartWorkout }) => {
   const [showFilters, setShowFilters] = useState(false);
   const [selectedWorkout, setSelectedWorkout] = useState(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
@@ -162,6 +166,13 @@ const WorkoutsPage = () => {
     { label: 'Volume Médio', value: '5.8t', icon: TrendingUp }
   ];
 
+  const handleNewWorkout = () => {
+    console.log('Iniciando novo treino');
+    if (onStartWorkout) {
+      onStartWorkout();
+    }
+  };
+
   return (
     <div className="max-w-6xl mx-auto space-y-6">
       <div className="flex items-center justify-between">
@@ -175,7 +186,10 @@ const WorkoutsPage = () => {
             <Filter className="w-4 h-4" />
             Filtros
           </Button>
-          <Button className="workout-gradient text-white">
+          <Button 
+            className="workout-gradient text-white"
+            onClick={handleNewWorkout}
+          >
             <Plus className="w-4 h-4 mr-2" />
             Novo Treino
           </Button>

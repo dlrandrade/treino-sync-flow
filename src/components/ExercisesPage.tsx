@@ -1,12 +1,13 @@
 
 import React, { useState } from 'react';
-import { Search, Filter, Plus, Play, Image, Heart } from 'lucide-react';
+import { Search, Filter, Plus, Play, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import ExerciseDetailModal from './ExerciseDetailModal';
 import AddToWorkoutModal from './AddToWorkoutModal';
 import { toast } from '@/components/ui/sonner';
+import { exercisesDatabase } from '@/data/exercisesDatabase';
 
 const ExercisesPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -28,172 +29,7 @@ const ExercisesPage = () => {
     { id: 'cardio', name: 'Cardio' }
   ];
 
-  const exercises = [
-    { 
-      id: 1, 
-      name: 'Supino Reto', 
-      category: 'peito', 
-      equipment: 'Barra', 
-      difficulty: 'Intermediário',
-      mediaType: 'video',
-      mediaUrl: 'https://www.learningexercises.com/assets/video/BenchPress.mp4'
-    },
-    { 
-      id: 2, 
-      name: 'Agachamento', 
-      category: 'pernas', 
-      equipment: 'Barra', 
-      difficulty: 'Básico',
-      mediaType: 'video',
-      mediaUrl: 'https://www.learningexercises.com/assets/video/Squat.mp4'
-    },
-    { 
-      id: 3, 
-      name: 'Puxada Frontal', 
-      category: 'costas', 
-      equipment: 'Máquina', 
-      difficulty: 'Básico',
-      mediaType: 'video',
-      mediaUrl: 'https://www.learningexercises.com/assets/video/LatPulldown.mp4'
-    },
-    { 
-      id: 4, 
-      name: 'Desenvolvimento Militar', 
-      category: 'ombros', 
-      equipment: 'Halteres', 
-      difficulty: 'Intermediário',
-      mediaType: 'video',
-      mediaUrl: 'https://www.learningexercises.com/assets/video/MilitaryPress.mp4'
-    },
-    { 
-      id: 5, 
-      name: 'Rosca Direta', 
-      category: 'bracos', 
-      equipment: 'Barra', 
-      difficulty: 'Básico',
-      mediaType: 'video',
-      mediaUrl: 'https://www.learningexercises.com/assets/video/BicepCurl.mp4'
-    },
-    { 
-      id: 6, 
-      name: 'Leg Press', 
-      category: 'pernas', 
-      equipment: 'Máquina', 
-      difficulty: 'Básico',
-      mediaType: 'video',
-      mediaUrl: 'https://www.learningexercises.com/assets/video/LegPress.mp4'
-    },
-    { 
-      id: 7, 
-      name: 'Prancha', 
-      category: 'core', 
-      equipment: 'Peso Corporal', 
-      difficulty: 'Básico',
-      mediaType: 'video',
-      mediaUrl: 'https://www.learningexercises.com/assets/video/Plank.mp4'
-    },
-    { 
-      id: 8, 
-      name: 'Deadlift', 
-      category: 'pernas', 
-      equipment: 'Barra', 
-      difficulty: 'Avançado',
-      mediaType: 'video',
-      mediaUrl: 'https://www.learningexercises.com/assets/video/Deadlift.mp4'
-    },
-    { 
-      id: 9, 
-      name: 'Flexão de Braço', 
-      category: 'peito', 
-      equipment: 'Peso Corporal', 
-      difficulty: 'Básico',
-      mediaType: 'video',
-      mediaUrl: 'https://www.learningexercises.com/assets/video/PushUp.mp4'
-    },
-    { 
-      id: 10, 
-      name: 'Remada Curvada', 
-      category: 'costas', 
-      equipment: 'Barra', 
-      difficulty: 'Intermediário',
-      mediaType: 'video',
-      mediaUrl: 'https://www.learningexercises.com/assets/video/BentOverRow.mp4'
-    },
-    { 
-      id: 11, 
-      name: 'Elevação Lateral', 
-      category: 'ombros', 
-      equipment: 'Halteres', 
-      difficulty: 'Básico',
-      mediaType: 'video',
-      mediaUrl: 'https://www.learningexercises.com/assets/video/LateralRaise.mp4'
-    },
-    { 
-      id: 12, 
-      name: 'Tríceps Testa', 
-      category: 'bracos', 
-      equipment: 'Halteres', 
-      difficulty: 'Intermediário',
-      mediaType: 'video',
-      mediaUrl: 'https://www.learningexercises.com/assets/video/SkullCrusher.mp4'
-    },
-    { 
-      id: 13, 
-      name: 'Afundo', 
-      category: 'pernas', 
-      equipment: 'Peso Corporal', 
-      difficulty: 'Básico',
-      mediaType: 'video',
-      mediaUrl: 'https://www.learningexercises.com/assets/video/Lunge.mp4'
-    },
-    { 
-      id: 14, 
-      name: 'Abdominal', 
-      category: 'core', 
-      equipment: 'Peso Corporal', 
-      difficulty: 'Básico',
-      mediaType: 'video',
-      mediaUrl: 'https://www.learningexercises.com/assets/video/Crunch.mp4'
-    },
-    { 
-      id: 15, 
-      name: 'Burpee', 
-      category: 'cardio', 
-      equipment: 'Peso Corporal', 
-      difficulty: 'Avançado',
-      mediaType: 'video',
-      mediaUrl: 'https://www.learningexercises.com/assets/video/Burpee.mp4'
-    },
-    { 
-      id: 16, 
-      name: 'Pull-ups', 
-      category: 'costas', 
-      equipment: 'Barra Fixa', 
-      difficulty: 'Avançado',
-      mediaType: 'video',
-      mediaUrl: 'https://www.learningexercises.com/assets/video/PullUp.mp4'
-    },
-    { 
-      id: 17, 
-      name: 'Supino Inclinado', 
-      category: 'peito', 
-      equipment: 'Halteres', 
-      difficulty: 'Intermediário',
-      mediaType: 'video',
-      mediaUrl: 'https://www.learningexercises.com/assets/video/InclineBenchPress.mp4'
-    },
-    { 
-      id: 18, 
-      name: 'Cadeira Extensora', 
-      category: 'pernas', 
-      equipment: 'Máquina', 
-      difficulty: 'Básico',
-      mediaType: 'video',
-      mediaUrl: 'https://www.learningexercises.com/assets/video/LegExtension.mp4'
-    }
-  ];
-
-  const filteredExercises = exercises.filter(exercise => {
+  const filteredExercises = exercisesDatabase.filter(exercise => {
     const matchesSearch = exercise.name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedCategory === 'todos' || exercise.category === selectedCategory;
     return matchesSearch && matchesCategory;
@@ -222,7 +58,7 @@ const ExercisesPage = () => {
         ? prev.filter(id => id !== exerciseId)
         : [...prev, exerciseId];
       
-      const exercise = exercises.find(ex => ex.id === exerciseId);
+      const exercise = exercisesDatabase.find(ex => ex.id === exerciseId);
       if (newFavorites.includes(exerciseId)) {
         toast(`${exercise?.name} adicionado aos favoritos!`);
       } else {
@@ -289,19 +125,10 @@ const ExercisesPage = () => {
         {filteredExercises.map((exercise) => (
           <div key={exercise.id} className="bg-card rounded-lg border border-border hover:border-primary/50 transition-colors overflow-hidden">
             {/* Media Preview */}
-            <div className="relative h-48 bg-gray-100">
-              <video 
-                src={exercise.mediaUrl} 
-                className="w-full h-full object-cover"
-                muted
-                loop
-                onMouseEnter={(e) => e.currentTarget.play()}
-                onMouseLeave={(e) => e.currentTarget.pause()}
-              />
-              <div className="absolute top-2 right-2">
-                <div className="bg-black/60 text-white p-1 rounded-full">
-                  <Play className="w-4 h-4" />
-                </div>
+            <div className="relative h-48 bg-gray-100 flex items-center justify-center">
+              <div className="text-center p-4">
+                <Play className="w-12 h-12 mx-auto mb-2 text-primary" />
+                <p className="text-sm text-muted-foreground">Demonstração disponível</p>
               </div>
               <div className="absolute top-2 left-2">
                 <Button
@@ -311,7 +138,7 @@ const ExercisesPage = () => {
                     e.stopPropagation();
                     handleToggleFavorite(exercise.id);
                   }}
-                  className={`p-1 h-8 w-8 ${favorites.includes(exercise.id) ? 'text-red-500' : 'text-white'}`}
+                  className={`p-1 h-8 w-8 ${favorites.includes(exercise.id) ? 'text-red-500' : 'text-muted-foreground'}`}
                 >
                   <Heart className={`w-4 h-4 ${favorites.includes(exercise.id) ? 'fill-current' : ''}`} />
                 </Button>
