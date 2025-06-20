@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ArrowLeft, Clock, Plus, Check, X, Play, Pause } from 'lucide-react';
 import { toast } from '@/components/ui/sonner';
+import RestTimer from './RestTimer';
 
 interface Exercise {
   id: number;
@@ -34,6 +35,8 @@ const ActiveWorkout: React.FC<ActiveWorkoutProps> = ({
   const [isRunning, setIsRunning] = useState(true);
   const [elapsedTime, setElapsedTime] = useState(0);
   const [exercises, setExercises] = useState<Exercise[]>([]);
+  const [showRestTimer, setShowRestTimer] = useState(false);
+  const [defaultRestTime, setDefaultRestTime] = useState(90);
 
   useEffect(() => {
     // Simula exercícios baseados na rotina ou treino livre
@@ -108,6 +111,15 @@ const ActiveWorkout: React.FC<ActiveWorkoutProps> = ({
           }
         : exercise
     ));
+
+    // Abrir timer de descanso quando completar uma série
+    const exercise = exercises.find(ex => ex.id === exerciseId);
+    const set = exercise?.sets.find(s => s.id === setId);
+    
+    if (set && !set.completed) {
+      console.log('Série completada, iniciando timer de descanso');
+      setShowRestTimer(true);
+    }
   };
 
   const updateSetWeight = (exerciseId: number, setId: number, weight: number) => {
@@ -123,6 +135,38 @@ const ActiveWorkout: React.FC<ActiveWorkoutProps> = ({
           }
         : exercise
     ));
+  };
+
+  const updateSetReps = (exerciseId: number, setId: number, reps: number) => {
+    setExercises(prev => prev.map(exercise => 
+      exercise.id === exerciseId 
+        ? {
+            ...exercise,
+            sets: exercise.sets.map(set => 
+              set.id === setId 
+                ? { ...set, reps }
+                : set
+            )
+          }
+        : exercise
+    ));
+  };
+
+  const addSetToExercise = (exerciseId: number) => {
+    setExercises(prev => prev.map(exercise => 
+      exercise.id === exerciseId 
+        ? {
+            ...exercise,
+            sets: [...exercise.sets, {
+              id: exercise.sets.length + 1,
+              reps: 10,
+              weight: 0,
+              completed: false
+            }]
+          }
+        : exercise
+    ));
+    toast('Nova série adicionada!');
   };
 
   const addExercise = () => {
@@ -208,7 +252,14 @@ const ActiveWorkout: React.FC<ActiveWorkoutProps> = ({
                   </div>
                   
                   <div className="flex items-center gap-2">
-                    <span className="text-sm">{set.reps} reps</span>
+                    <Input
+                      type="number"
+                      placeholder="Reps"
+                      value={set.reps || ''}
+                      onChange={(e) => updateSetReps(exercise.id, set.id, Number(e.target.value))}
+                      className="w-20"
+                    />
+                    <span className="text-sm">reps</span>
                   </div>
                   
                   <Button
@@ -221,6 +272,16 @@ const ActiveWorkout: React.FC<ActiveWorkoutProps> = ({
                   </Button>
                 </div>
               ))}
+              
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={() => addSetToExercise(exercise.id)}
+                className="w-full mt-2 border-dashed border-2"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Adicionar Série
+              </Button>
             </div>
           </div>
         ))}
@@ -240,6 +301,13 @@ const ActiveWorkout: React.FC<ActiveWorkoutProps> = ({
           Finalizar Treino
         </Button>
       </div>
+
+      {/* Rest Timer */}
+      <RestTimer
+        isOpen={showRestTimer}
+        onClose={() => setShowRestTimer(false)}
+        defaultTime={defaultRestTime}
+      />
     </div>
   );
 };

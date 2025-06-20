@@ -1,16 +1,21 @@
 
 import React, { useState } from 'react';
-import { Search, Filter, Plus, Play, Image } from 'lucide-react';
+import { Search, Filter, Plus, Play, Image, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import ExerciseDetailModal from './ExerciseDetailModal';
+import AddToWorkoutModal from './AddToWorkoutModal';
+import { toast } from '@/components/ui/sonner';
 
 const ExercisesPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('todos');
   const [selectedExercise, setSelectedExercise] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [showAddToWorkoutModal, setShowAddToWorkoutModal] = useState(false);
+  const [exerciseToAdd, setExerciseToAdd] = useState(null);
+  const [favorites, setFavorites] = useState<number[]>([]);
 
   const categories = [
     { id: 'todos', name: 'Todos' },
@@ -19,7 +24,8 @@ const ExercisesPage = () => {
     { id: 'ombros', name: 'Ombros' },
     { id: 'bracos', name: 'Braços' },
     { id: 'pernas', name: 'Pernas' },
-    { id: 'core', name: 'Core' }
+    { id: 'core', name: 'Core' },
+    { id: 'cardio', name: 'Cardio' }
   ];
 
   const exercises = [
@@ -30,7 +36,7 @@ const ExercisesPage = () => {
       equipment: 'Barra', 
       difficulty: 'Intermediário',
       mediaType: 'video',
-      mediaUrl: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center'
+      mediaUrl: 'https://www.learningexercises.com/assets/video/BenchPress.mp4'
     },
     { 
       id: 2, 
@@ -38,8 +44,8 @@ const ExercisesPage = () => {
       category: 'pernas', 
       equipment: 'Barra', 
       difficulty: 'Básico',
-      mediaType: 'image',
-      mediaUrl: 'https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=400&h=300&fit=crop&crop=center'
+      mediaType: 'video',
+      mediaUrl: 'https://www.learningexercises.com/assets/video/Squat.mp4'
     },
     { 
       id: 3, 
@@ -48,7 +54,7 @@ const ExercisesPage = () => {
       equipment: 'Máquina', 
       difficulty: 'Básico',
       mediaType: 'video',
-      mediaUrl: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=400&h=300&fit=crop&crop=center'
+      mediaUrl: 'https://www.learningexercises.com/assets/video/LatPulldown.mp4'
     },
     { 
       id: 4, 
@@ -56,8 +62,8 @@ const ExercisesPage = () => {
       category: 'ombros', 
       equipment: 'Halteres', 
       difficulty: 'Intermediário',
-      mediaType: 'image',
-      mediaUrl: 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=400&h=300&fit=crop&crop=center'
+      mediaType: 'video',
+      mediaUrl: 'https://www.learningexercises.com/assets/video/MilitaryPress.mp4'
     },
     { 
       id: 5, 
@@ -66,7 +72,7 @@ const ExercisesPage = () => {
       equipment: 'Barra', 
       difficulty: 'Básico',
       mediaType: 'video',
-      mediaUrl: 'https://images.unsplash.com/photo-1594737625785-a6cbdabd333c?w=400&h=300&fit=crop&crop=center'
+      mediaUrl: 'https://www.learningexercises.com/assets/video/BicepCurl.mp4'
     },
     { 
       id: 6, 
@@ -74,8 +80,8 @@ const ExercisesPage = () => {
       category: 'pernas', 
       equipment: 'Máquina', 
       difficulty: 'Básico',
-      mediaType: 'image',
-      mediaUrl: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop&crop=center'
+      mediaType: 'video',
+      mediaUrl: 'https://www.learningexercises.com/assets/video/LegPress.mp4'
     },
     { 
       id: 7, 
@@ -84,7 +90,7 @@ const ExercisesPage = () => {
       equipment: 'Peso Corporal', 
       difficulty: 'Básico',
       mediaType: 'video',
-      mediaUrl: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=300&fit=crop&crop=center'
+      mediaUrl: 'https://www.learningexercises.com/assets/video/Plank.mp4'
     },
     { 
       id: 8, 
@@ -92,8 +98,98 @@ const ExercisesPage = () => {
       category: 'pernas', 
       equipment: 'Barra', 
       difficulty: 'Avançado',
-      mediaType: 'image',
-      mediaUrl: 'https://images.unsplash.com/photo-1605296867304-46d5465a13f1?w=400&h=300&fit=crop&crop=center'
+      mediaType: 'video',
+      mediaUrl: 'https://www.learningexercises.com/assets/video/Deadlift.mp4'
+    },
+    { 
+      id: 9, 
+      name: 'Flexão de Braço', 
+      category: 'peito', 
+      equipment: 'Peso Corporal', 
+      difficulty: 'Básico',
+      mediaType: 'video',
+      mediaUrl: 'https://www.learningexercises.com/assets/video/PushUp.mp4'
+    },
+    { 
+      id: 10, 
+      name: 'Remada Curvada', 
+      category: 'costas', 
+      equipment: 'Barra', 
+      difficulty: 'Intermediário',
+      mediaType: 'video',
+      mediaUrl: 'https://www.learningexercises.com/assets/video/BentOverRow.mp4'
+    },
+    { 
+      id: 11, 
+      name: 'Elevação Lateral', 
+      category: 'ombros', 
+      equipment: 'Halteres', 
+      difficulty: 'Básico',
+      mediaType: 'video',
+      mediaUrl: 'https://www.learningexercises.com/assets/video/LateralRaise.mp4'
+    },
+    { 
+      id: 12, 
+      name: 'Tríceps Testa', 
+      category: 'bracos', 
+      equipment: 'Halteres', 
+      difficulty: 'Intermediário',
+      mediaType: 'video',
+      mediaUrl: 'https://www.learningexercises.com/assets/video/SkullCrusher.mp4'
+    },
+    { 
+      id: 13, 
+      name: 'Afundo', 
+      category: 'pernas', 
+      equipment: 'Peso Corporal', 
+      difficulty: 'Básico',
+      mediaType: 'video',
+      mediaUrl: 'https://www.learningexercises.com/assets/video/Lunge.mp4'
+    },
+    { 
+      id: 14, 
+      name: 'Abdominal', 
+      category: 'core', 
+      equipment: 'Peso Corporal', 
+      difficulty: 'Básico',
+      mediaType: 'video',
+      mediaUrl: 'https://www.learningexercises.com/assets/video/Crunch.mp4'
+    },
+    { 
+      id: 15, 
+      name: 'Burpee', 
+      category: 'cardio', 
+      equipment: 'Peso Corporal', 
+      difficulty: 'Avançado',
+      mediaType: 'video',
+      mediaUrl: 'https://www.learningexercises.com/assets/video/Burpee.mp4'
+    },
+    { 
+      id: 16, 
+      name: 'Pull-ups', 
+      category: 'costas', 
+      equipment: 'Barra Fixa', 
+      difficulty: 'Avançado',
+      mediaType: 'video',
+      mediaUrl: 'https://www.learningexercises.com/assets/video/PullUp.mp4'
+    },
+    { 
+      id: 17, 
+      name: 'Supino Inclinado', 
+      category: 'peito', 
+      equipment: 'Halteres', 
+      difficulty: 'Intermediário',
+      mediaType: 'video',
+      mediaUrl: 'https://www.learningexercises.com/assets/video/InclineBenchPress.mp4'
+    },
+    { 
+      id: 18, 
+      name: 'Cadeira Extensora', 
+      category: 'pernas', 
+      equipment: 'Máquina', 
+      difficulty: 'Básico',
+      mediaType: 'video',
+      mediaUrl: 'https://www.learningexercises.com/assets/video/LegExtension.mp4'
     }
   ];
 
@@ -112,6 +208,29 @@ const ExercisesPage = () => {
   const handleCloseModal = () => {
     setShowModal(false);
     setSelectedExercise(null);
+  };
+
+  const handleAddToWorkout = (exercise: any) => {
+    console.log('Adicionando exercício ao treino:', exercise.name);
+    setExerciseToAdd(exercise);
+    setShowAddToWorkoutModal(true);
+  };
+
+  const handleToggleFavorite = (exerciseId: number) => {
+    setFavorites(prev => {
+      const newFavorites = prev.includes(exerciseId) 
+        ? prev.filter(id => id !== exerciseId)
+        : [...prev, exerciseId];
+      
+      const exercise = exercises.find(ex => ex.id === exerciseId);
+      if (newFavorites.includes(exerciseId)) {
+        toast(`${exercise?.name} adicionado aos favoritos!`);
+      } else {
+        toast(`${exercise?.name} removido dos favoritos!`);
+      }
+      
+      return newFavorites;
+    });
   };
 
   const getDifficultyColor = (difficulty: string) => {
@@ -171,21 +290,31 @@ const ExercisesPage = () => {
           <div key={exercise.id} className="bg-card rounded-lg border border-border hover:border-primary/50 transition-colors overflow-hidden">
             {/* Media Preview */}
             <div className="relative h-48 bg-gray-100">
-              <img 
+              <video 
                 src={exercise.mediaUrl} 
-                alt={exercise.name}
                 className="w-full h-full object-cover"
+                muted
+                loop
+                onMouseEnter={(e) => e.currentTarget.play()}
+                onMouseLeave={(e) => e.currentTarget.pause()}
               />
               <div className="absolute top-2 right-2">
-                {exercise.mediaType === 'video' ? (
-                  <div className="bg-black/60 text-white p-1 rounded-full">
-                    <Play className="w-4 h-4" />
-                  </div>
-                ) : (
-                  <div className="bg-black/60 text-white p-1 rounded-full">
-                    <Image className="w-4 h-4" />
-                  </div>
-                )}
+                <div className="bg-black/60 text-white p-1 rounded-full">
+                  <Play className="w-4 h-4" />
+                </div>
+              </div>
+              <div className="absolute top-2 left-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleToggleFavorite(exercise.id);
+                  }}
+                  className={`p-1 h-8 w-8 ${favorites.includes(exercise.id) ? 'text-red-500' : 'text-white'}`}
+                >
+                  <Heart className={`w-4 h-4 ${favorites.includes(exercise.id) ? 'fill-current' : ''}`} />
+                </Button>
               </div>
               <div className="absolute bottom-2 left-2">
                 <Badge className={getDifficultyColor(exercise.difficulty)}>
@@ -214,13 +343,21 @@ const ExercisesPage = () => {
                 </div>
               </div>
 
-              <Button 
-                variant="outline" 
-                className="w-full"
-                onClick={() => handleViewDetails(exercise)}
-              >
-                Ver Detalhes
-              </Button>
+              <div className="flex gap-2">
+                <Button 
+                  variant="outline" 
+                  className="flex-1"
+                  onClick={() => handleViewDetails(exercise)}
+                >
+                  Ver Detalhes
+                </Button>
+                <Button 
+                  onClick={() => handleAddToWorkout(exercise)}
+                  className="flex-1 workout-gradient text-white"
+                >
+                  Adicionar
+                </Button>
+              </div>
             </div>
           </div>
         ))}
@@ -237,6 +374,15 @@ const ExercisesPage = () => {
         exercise={selectedExercise}
         isOpen={showModal}
         onClose={handleCloseModal}
+        onToggleFavorite={handleToggleFavorite}
+        isFavorite={selectedExercise ? favorites.includes(selectedExercise.id) : false}
+      />
+
+      {/* Modal Adicionar ao Treino */}
+      <AddToWorkoutModal
+        exercise={exerciseToAdd}
+        isOpen={showAddToWorkoutModal}
+        onClose={() => setShowAddToWorkoutModal(false)}
       />
     </div>
   );

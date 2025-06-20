@@ -1,9 +1,11 @@
 
 import React, { useState } from 'react';
-import { Plus, Calendar, Clock, Dumbbell } from 'lucide-react';
+import { Plus, Calendar, Clock, Dumbbell, Edit, MoreVertical } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { toast } from '@/components/ui/sonner';
 import CreateRoutineModal from './CreateRoutineModal';
+import EditRoutineModal from './EditRoutineModal';
 
 interface RoutinesPageProps {
   onStartWorkout: () => void;
@@ -12,6 +14,8 @@ interface RoutinesPageProps {
 
 const RoutinesPage: React.FC<RoutinesPageProps> = ({ onStartWorkout, onStartWorkoutWithRoutine }) => {
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedRoutine, setSelectedRoutine] = useState(null);
   const [routines, setRoutines] = useState([
     {
       id: 1,
@@ -41,9 +45,27 @@ const RoutinesPage: React.FC<RoutinesPageProps> = ({ onStartWorkout, onStartWork
     setShowCreateModal(true);
   };
 
+  const handleEditRoutine = (routine: any) => {
+    console.log('Editando rotina:', routine.name);
+    setSelectedRoutine(routine);
+    setShowEditModal(true);
+  };
+
   const handleCreateRoutine = (newRoutine: any) => {
     setRoutines(prev => [...prev, newRoutine]);
     console.log('Nova rotina criada:', newRoutine);
+  };
+
+  const handleSaveRoutine = (updatedRoutine: any) => {
+    setRoutines(prev => prev.map(routine => 
+      routine.id === updatedRoutine.id ? updatedRoutine : routine
+    ));
+    console.log('Rotina atualizada:', updatedRoutine);
+  };
+
+  const handleDeleteRoutine = (routineId: number) => {
+    setRoutines(prev => prev.filter(routine => routine.id !== routineId));
+    toast('Rotina excluída com sucesso!');
   };
 
   const handleStartWorkoutWithRoutine = (routineId: number, routineName: string) => {
@@ -99,9 +121,26 @@ const RoutinesPage: React.FC<RoutinesPageProps> = ({ onStartWorkout, onStartWork
               <div className="w-10 h-10 stats-gradient rounded-lg flex items-center justify-center">
                 <Dumbbell className="w-5 h-5 text-white" />
               </div>
-              <Button variant="ghost" size="sm">
-                ⋯
-              </Button>
+              
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm">
+                    <MoreVertical className="w-4 h-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => handleEditRoutine(routine)}>
+                    <Edit className="w-4 h-4 mr-2" />
+                    Editar
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    onClick={() => handleDeleteRoutine(routine.id)}
+                    className="text-red-600"
+                  >
+                    Excluir
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
 
             <h3 className="font-semibold mb-2">{routine.name}</h3>
@@ -169,6 +208,17 @@ const RoutinesPage: React.FC<RoutinesPageProps> = ({ onStartWorkout, onStartWork
         isOpen={showCreateModal}
         onClose={() => setShowCreateModal(false)}
         onCreateRoutine={handleCreateRoutine}
+      />
+
+      {/* Modal de Edição */}
+      <EditRoutineModal
+        routine={selectedRoutine}
+        isOpen={showEditModal}
+        onClose={() => {
+          setShowEditModal(false);
+          setSelectedRoutine(null);
+        }}
+        onSave={handleSaveRoutine}
       />
     </div>
   );

@@ -3,7 +3,7 @@ import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { X, Clock, Target, User, Dumbbell, Play, Image } from 'lucide-react';
+import { X, Clock, Target, User, Dumbbell, Play, Image, Heart } from 'lucide-react';
 
 interface Exercise {
   id: number;
@@ -19,12 +19,16 @@ interface ExerciseDetailModalProps {
   exercise: Exercise | null;
   isOpen: boolean;
   onClose: () => void;
+  onToggleFavorite?: (exerciseId: number) => void;
+  isFavorite?: boolean;
 }
 
 const ExerciseDetailModal: React.FC<ExerciseDetailModalProps> = ({ 
   exercise, 
   isOpen, 
-  onClose 
+  onClose,
+  onToggleFavorite,
+  isFavorite = false
 }) => {
   if (!exercise) return null;
 
@@ -43,6 +47,16 @@ const ExerciseDetailModal: React.FC<ExerciseDetailModalProps> = ({
               <Dumbbell className="w-5 h-5 text-white" />
             </div>
             {exercise.name}
+            {onToggleFavorite && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => onToggleFavorite(exercise.id)}
+                className={`ml-auto ${isFavorite ? 'text-red-500' : 'text-muted-foreground'}`}
+              >
+                <Heart className={`w-5 h-5 ${isFavorite ? 'fill-current' : ''}`} />
+              </Button>
+            )}
           </DialogTitle>
         </DialogHeader>
 
@@ -50,23 +64,18 @@ const ExerciseDetailModal: React.FC<ExerciseDetailModalProps> = ({
           {/* Media Section */}
           {exercise.mediaUrl && (
             <div className="relative w-full h-64 bg-gray-100 rounded-lg overflow-hidden">
-              <img 
+              <video 
                 src={exercise.mediaUrl} 
-                alt={exercise.name}
                 className="w-full h-full object-cover"
+                controls
+                muted
+                loop
               />
               <div className="absolute top-4 right-4">
-                {exercise.mediaType === 'video' ? (
-                  <div className="bg-black/60 text-white p-2 rounded-full flex items-center gap-2">
-                    <Play className="w-5 h-5" />
-                    <span className="text-sm">Vídeo demonstrativo</span>
-                  </div>
-                ) : (
-                  <div className="bg-black/60 text-white p-2 rounded-full flex items-center gap-2">
-                    <Image className="w-5 h-5" />
-                    <span className="text-sm">Imagem demonstrativa</span>
-                  </div>
-                )}
+                <div className="bg-black/60 text-white p-2 rounded-full flex items-center gap-2">
+                  <Play className="w-5 h-5" />
+                  <span className="text-sm">Vídeo demonstrativo</span>
+                </div>
               </div>
             </div>
           )}
@@ -129,19 +138,6 @@ const ExerciseDetailModal: React.FC<ExerciseDetailModalProps> = ({
                 <li>Descanse adequadamente entre as séries</li>
               </ul>
             </div>
-
-            {exercise.mediaType === 'video' && (
-              <div>
-                <h3 className="text-lg font-semibold mb-2">Demonstração em Vídeo</h3>
-                <p className="text-sm text-muted-foreground mb-3">
-                  Assista ao vídeo demonstrativo para aprender a técnica correta de execução.
-                </p>
-                <Button variant="outline" className="flex items-center gap-2">
-                  <Play className="w-4 h-4" />
-                  Reproduzir Vídeo
-                </Button>
-              </div>
-            )}
           </div>
 
           {/* Botões de ação */}
@@ -149,9 +145,16 @@ const ExerciseDetailModal: React.FC<ExerciseDetailModalProps> = ({
             <Button className="flex-1 workout-gradient text-white">
               Adicionar ao Treino
             </Button>
-            <Button variant="outline" className="flex-1">
-              Salvar nos Favoritos
-            </Button>
+            {onToggleFavorite && (
+              <Button 
+                variant="outline" 
+                className="flex-1"
+                onClick={() => onToggleFavorite(exercise.id)}
+              >
+                <Heart className={`w-4 h-4 mr-2 ${isFavorite ? 'fill-current text-red-500' : ''}`} />
+                {isFavorite ? 'Remover dos Favoritos' : 'Salvar nos Favoritos'}
+              </Button>
+            )}
           </div>
         </div>
       </DialogContent>
