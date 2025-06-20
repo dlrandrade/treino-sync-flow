@@ -8,37 +8,41 @@ import { Calendar, Clock, Weight, TrendingUp } from 'lucide-react';
 
 interface WorkoutFiltersProps {
   isOpen: boolean;
-  onClose: () => void;
-  onApplyFilters: (filters: any) => void;
-  currentFilters: any;
+  filters: {
+    period: string;
+    exerciseType: string;
+    duration: string;
+  };
+  onFiltersChange: (filters: { period: string; exerciseType: string; duration: string; }) => void;
 }
 
 const WorkoutFilters: React.FC<WorkoutFiltersProps> = ({ 
   isOpen, 
-  onClose, 
-  onApplyFilters,
-  currentFilters 
+  filters,
+  onFiltersChange
 }) => {
-  const [filters, setFilters] = React.useState(currentFilters);
+  const [localFilters, setLocalFilters] = React.useState(filters);
+
+  React.useEffect(() => {
+    setLocalFilters(filters);
+  }, [filters]);
 
   const handleApply = () => {
-    onApplyFilters(filters);
-    onClose();
+    onFiltersChange(localFilters);
   };
 
   const handleReset = () => {
     const resetFilters = {
-      dateRange: 'all',
-      exerciseTypes: [],
-      durationRange: 'all',
-      volumeRange: 'all'
+      period: 'all',
+      exerciseType: 'all',
+      duration: 'all'
     };
-    setFilters(resetFilters);
-    onApplyFilters(resetFilters);
+    setLocalFilters(resetFilters);
+    onFiltersChange(resetFilters);
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={() => {}}>
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
@@ -61,8 +65,8 @@ const WorkoutFilters: React.FC<WorkoutFiltersProps> = ({
                 <div key={option.value} className="flex items-center space-x-2">
                   <Checkbox
                     id={option.value}
-                    checked={filters.dateRange === option.value}
-                    onCheckedChange={() => setFilters({...filters, dateRange: option.value})}
+                    checked={localFilters.period === option.value}
+                    onCheckedChange={() => setLocalFilters({...localFilters, period: option.value})}
                   />
                   <Label htmlFor={option.value} className="text-sm">
                     {option.label}
@@ -77,28 +81,18 @@ const WorkoutFilters: React.FC<WorkoutFiltersProps> = ({
             <Label className="text-base font-medium">Tipos de Exercício</Label>
             <div className="mt-2 space-y-2">
               {[
-                'Peito', 'Costas', 'Pernas', 'Ombros', 'Braços', 'Core'
+                { value: 'all', label: 'Todos os tipos' },
+                { value: 'strength', label: 'Musculação' },
+                { value: 'cardio', label: 'Cardio' }
               ].map((type) => (
-                <div key={type} className="flex items-center space-x-2">
+                <div key={type.value} className="flex items-center space-x-2">
                   <Checkbox
-                    id={type}
-                    checked={filters.exerciseTypes.includes(type)}
-                    onCheckedChange={(checked) => {
-                      if (checked) {
-                        setFilters({
-                          ...filters,
-                          exerciseTypes: [...filters.exerciseTypes, type]
-                        });
-                      } else {
-                        setFilters({
-                          ...filters,
-                          exerciseTypes: filters.exerciseTypes.filter((t: string) => t !== type)
-                        });
-                      }
-                    }}
+                    id={type.value}
+                    checked={localFilters.exerciseType === type.value}
+                    onCheckedChange={() => setLocalFilters({...localFilters, exerciseType: type.value})}
                   />
-                  <Label htmlFor={type} className="text-sm">
-                    {type}
+                  <Label htmlFor={type.value} className="text-sm">
+                    {type.label}
                   </Label>
                 </div>
               ))}
@@ -112,14 +106,14 @@ const WorkoutFilters: React.FC<WorkoutFiltersProps> = ({
               {[
                 { value: 'all', label: 'Qualquer duração' },
                 { value: 'short', label: 'Até 45 min' },
-                { value: 'medium', label: '45-75 min' },
-                { value: 'long', label: 'Mais de 75 min' }
+                { value: 'medium', label: '45-90 min' },
+                { value: 'long', label: 'Mais de 90 min' }
               ].map((option) => (
                 <div key={option.value} className="flex items-center space-x-2">
                   <Checkbox
                     id={`duration-${option.value}`}
-                    checked={filters.durationRange === option.value}
-                    onCheckedChange={() => setFilters({...filters, durationRange: option.value})}
+                    checked={localFilters.duration === option.value}
+                    onCheckedChange={() => setLocalFilters({...localFilters, duration: option.value})}
                   />
                   <Label htmlFor={`duration-${option.value}`} className="text-sm">
                     {option.label}
