@@ -1,8 +1,9 @@
 
 import React, { useState } from 'react';
-import { User, Calendar, Trophy, TrendingUp, Settings, Heart, Dumbbell } from 'lucide-react';
+import { User, Calendar, Trophy, TrendingUp, Settings, Heart, Dumbbell, Palette } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { useTheme } from '@/contexts/ThemeContext';
 import EditProfileModal from './EditProfileModal';
 
 interface ProfilePageProps {
@@ -12,6 +13,7 @@ interface ProfilePageProps {
 const ProfilePage: React.FC<ProfilePageProps> = ({ user: initialUser }) => {
   const [user, setUser] = useState(initialUser);
   const [showEditModal, setShowEditModal] = useState(false);
+  const { currentTheme, setTheme, availableThemes } = useTheme();
 
   const stats = [
     { label: 'Treinos Realizados', value: '47', icon: Calendar },
@@ -34,6 +36,15 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ user: initialUser }) => {
     { name: 'Desenvolvimento Militar', category: 'Ombros', frequency: 8 }
   ];
 
+  const themeNames = {
+    blue: 'Azul',
+    green: 'Verde', 
+    orange: 'Laranja',
+    pink: 'Rosa',
+    purple: 'Roxo',
+    red: 'Vermelho'
+  };
+
   const handleSaveProfile = (updatedUser: any) => {
     setUser(updatedUser);
     console.log('Perfil atualizado:', updatedUser);
@@ -55,7 +66,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ user: initialUser }) => {
               {user.avatar ? (
                 <AvatarImage src={user.avatar} alt={user.name} />
               ) : (
-                <AvatarFallback className="text-xl bg-gradient-to-br from-primary to-primary/70 text-white">
+                <AvatarFallback className="text-xl workout-gradient text-white">
                   {getInitials(user.name)}
                 </AvatarFallback>
               )}
@@ -70,6 +81,36 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ user: initialUser }) => {
             <Settings className="w-4 h-4 mr-2" />
             Editar Perfil
           </Button>
+        </div>
+      </div>
+
+      {/* Personalização de Tema */}
+      <div className="bg-card p-6 rounded-lg border border-border">
+        <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+          <Palette className="w-5 h-5" />
+          Personalizar Tema
+        </h2>
+        <p className="text-muted-foreground mb-4">Escolha a cor de destaque do ZymApp</p>
+        <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
+          {Object.entries(availableThemes).map(([themeName, themeColors]) => (
+            <button
+              key={themeName}
+              onClick={() => setTheme(themeName)}
+              className={`p-3 rounded-lg border-2 transition-all hover:scale-105 ${
+                currentTheme === themeName 
+                  ? 'border-primary shadow-lg' 
+                  : 'border-border hover:border-primary/50'
+              }`}
+            >
+              <div 
+                className="w-8 h-8 rounded-full mx-auto mb-2"
+                style={{ background: themeColors.gradient }}
+              />
+              <p className="text-xs font-medium">
+                {themeNames[themeName as keyof typeof themeNames]}
+              </p>
+            </button>
+          ))}
         </div>
       </div>
 
@@ -153,7 +194,6 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ user: initialUser }) => {
         </div>
       </div>
 
-      {/* Progresso Recente */}
       <div className="bg-card p-6 rounded-lg border border-border">
         <h2 className="text-xl font-semibold mb-4">Progresso Recente</h2>
         <div className="space-y-4">

@@ -181,7 +181,7 @@ const RoutinesPage: React.FC<RoutinesPageProps> = ({ onStartWorkout, onStartWork
           </div>
         ))}
 
-        {/* Card para criar nova rotina */}
+        {/* Card para criar nova rotina - CORRIGIDO */}
         <div 
           className="bg-card p-6 rounded-lg border border-dashed border-border hover:border-primary/50 transition-colors cursor-pointer"
           onClick={handleCreateNewRoutine}
@@ -196,7 +196,14 @@ const RoutinesPage: React.FC<RoutinesPageProps> = ({ onStartWorkout, onStartWork
                 Monte uma rotina personalizada com seus exercícios favoritos
               </p>
             </div>
-            <Button variant="ghost" className="text-primary">
+            <Button 
+              variant="ghost" 
+              className="text-primary"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleCreateNewRoutine();
+              }}
+            >
               Começar
             </Button>
           </div>
