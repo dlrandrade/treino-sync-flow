@@ -173,6 +173,11 @@ const WorkoutsPage: React.FC<WorkoutsPageProps> = ({ onStartWorkout }) => {
     }
   };
 
+  const handleFiltersChange = (newFilters: typeof filters) => {
+    setFilters(newFilters);
+    setShowFilters(false);
+  };
+
   return (
     <div className="max-w-6xl mx-auto space-y-6">
       <div className="flex items-center justify-between">
@@ -218,7 +223,7 @@ const WorkoutsPage: React.FC<WorkoutsPageProps> = ({ onStartWorkout }) => {
       <WorkoutFilters
         isOpen={showFilters}
         filters={filters}
-        onFiltersChange={setFilters}
+        onFiltersChange={handleFiltersChange}
       />
 
       {/* Lista de treinos */}

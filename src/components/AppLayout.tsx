@@ -84,13 +84,17 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children, currentPage, onPageChan
             return (
               <div
                 key={item.id}
-                className={`sidebar-item ${currentPage === item.id ? 'active' : ''}`}
+                className={`flex items-center gap-3 px-3 py-3 rounded-lg cursor-pointer transition-colors ${
+                  currentPage === item.id 
+                    ? 'workout-gradient text-white' 
+                    : 'hover:bg-accent hover:text-accent-foreground'
+                }`}
                 onClick={() => {
                   onPageChange(item.id);
                   setSidebarOpen(false);
                 }}
               >
-                <Icon className="w-5 h-5" />
+                <Icon className="w-5 h-5 flex-shrink-0" />
                 <span className="font-medium">{item.label}</span>
               </div>
             );

@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Calendar, Clock, Weight, TrendingUp } from 'lucide-react';
+import { Calendar, X } from 'lucide-react';
 
 interface WorkoutFiltersProps {
   isOpen: boolean;
@@ -41,13 +41,23 @@ const WorkoutFilters: React.FC<WorkoutFiltersProps> = ({
     onFiltersChange(resetFilters);
   };
 
+  const handleClose = () => {
+    // Fazer o callback para fechar o modal
+    onFiltersChange(localFilters);
+  };
+
   return (
-    <Dialog open={isOpen} onOpenChange={() => {}}>
+    <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Calendar className="w-5 h-5" />
-            Filtrar Treinos
+          <DialogTitle className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Calendar className="w-5 h-5" />
+              Filtrar Treinos
+            </div>
+            <Button variant="ghost" size="sm" onClick={handleClose}>
+              <X className="w-4 h-4" />
+            </Button>
           </DialogTitle>
         </DialogHeader>
 
